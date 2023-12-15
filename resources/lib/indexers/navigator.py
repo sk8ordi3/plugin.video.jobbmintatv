@@ -30,21 +30,11 @@ sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
 addonFanart = xbmcaddon.Addon().getAddonInfo('fanart')
 
-import platform
-import xml.etree.ElementTree as ET
-
-os_info = platform.platform()
+version = xbmcaddon.Addon().getAddonInfo('version')
 kodi_version = xbmc.getInfoLabel('System.BuildVersion')
+base_log_info = f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}'
 
-current_directory = os.path.dirname(os.path.abspath(__file__))
-parent_directory = os.path.dirname(os.path.dirname(os.path.dirname(current_directory)))
-addon_xml_path = os.path.join(parent_directory, "addon.xml")
-
-tree = ET.parse(addon_xml_path)
-root = tree.getroot()
-version = root.attrib.get("version")
-
-xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info}', xbmc.LOGINFO)
+xbmc.log(f'{base_log_info}', xbmc.LOGINFO)
 
 base_url = 'https://jobbmintatv.org'
 
@@ -147,7 +137,7 @@ class navigator:
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'movie_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except AttributeError:
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | getOnlyMovies | next_page_url | csak egy oldal található', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| getOnlyMovies | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
         self.endDirectory('movies')
 
@@ -187,7 +177,7 @@ class navigator:
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'series_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except AttributeError:
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | getOnlySeries | next_page_url | csak egy oldal található', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| getOnlySeries | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
         self.endDirectory('movies')      
 
@@ -227,7 +217,7 @@ class navigator:
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'movie_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except (AttributeError, UnboundLocalError):
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | getMovieItems | next_page_url | csak egy oldal található', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| getMovieItems | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
         self.endDirectory('movies')
 
@@ -267,7 +257,7 @@ class navigator:
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'series_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except (AttributeError, UnboundLocalError):
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | getSeriesItems | next_page_url | csak egy oldal található', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| getSeriesItems | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
         self.endDirectory('series')
 
@@ -377,7 +367,7 @@ class navigator:
 
         if iframe:
             iframe_src = iframe.get('src')
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | extractEpisodes | iframe_src | {iframe_src}', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| extractEpisodes | iframe_src | {iframe_src}', xbmc.LOGINFO)
             
             hun_ep = f'{ep_title} - {hun_title} - {year}'
             
@@ -389,11 +379,11 @@ class navigator:
         try:
             direct_url = urlresolver.resolve(url)
             
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | playMovie | direct_url: {direct_url}', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| playMovie | direct_url: {direct_url}', xbmc.LOGINFO)
             play_item = xbmcgui.ListItem(path=direct_url)
             xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
         except:
-            xbmc.log(f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}| OS: {os_info} | playMovie | name: No video sources found', xbmc.LOGINFO)
+            xbmc.log(f'{base_log_info}| playMovie | name: No video sources found', xbmc.LOGINFO)
             notification = xbmcgui.Dialog()
             notification.notification("JobbMintATv", "Törölt tartalom", time=5000)
 
