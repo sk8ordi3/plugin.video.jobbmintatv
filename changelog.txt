@@ -1,4 +1,6 @@
-﻿[B]1.0.1[/B]
+﻿[B]1.0.2[/B]
+- oldalon lévő változtatás lekövetése
+[B]1.0.1[/B]
 - os verzió kiszedése
 [B]1.0.0[/B]
 - Első verzió

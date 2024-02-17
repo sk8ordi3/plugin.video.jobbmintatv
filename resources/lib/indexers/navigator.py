@@ -305,16 +305,7 @@ class navigator:
             season_link = urllib.parse.urljoin(htt, evadok['href'])
             season_links.append({"evad": season_link})
 
-        veletlen_resz_element = soup_2.find('a', class_='evad_link_vezerlo', string='Véletlen rész')
-        veletlen_resz = urllib.parse.urljoin(htt, veletlen_resz_element['href']) if veletlen_resz_element else ''
-        
-        sid_element = soup_2.find('a', class_='evad_link_vezerlo info rand', string='Véletlen rész')
-        
-        if sid_element is not None:
-            next_a_element = sid_element.find_next('a', {'sid': True})
-            sid = next_a_element['sid'] if next_a_element and 'sid' in next_a_element.attrs else ''
-        else:
-            sid = ''
+        sid = re.findall(r'sid=\"(.*?)\"', str(soup_2))[0].strip()
         
         evad_nums = [int(evadok.text.strip()) for evadok in soup_2.find_all('a', class_='evadoks')]
 
