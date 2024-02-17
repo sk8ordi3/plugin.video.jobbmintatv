@@ -1,4 +1,6 @@
-﻿[B]1.0.2[/B]
+﻿[B]1.0.3[/B]
+- .net használata, film (évszám) javítása
+[B]1.0.2[/B]
 - oldalon lévő változtatás lekövetése
 [B]1.0.1[/B]
 - os verzió kiszedése

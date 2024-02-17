@@ -3,6 +3,8 @@
 
 Kodi kiegészítő a JobbMintATv-hez
 
+1.0.3 - .net használata, film (évszám) javítása
+
 1.0.2 - oldalon lévő változtatás lekövetése
 
 1.0.1 - os verzió kiszedése

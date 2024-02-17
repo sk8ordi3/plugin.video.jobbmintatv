@@ -36,10 +36,10 @@ base_log_info = f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}'
 
 xbmc.log(f'{base_log_info}', xbmc.LOGINFO)
 
-base_url = 'https://jobbmintatv.org'
+base_url = 'https://jobbmintatv.net'
 
 headers = {
-    'authority': 'jobbmintatv.org',
+    'authority': 'jobbmintatv.net',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
 }
@@ -75,7 +75,7 @@ class navigator:
         page = requests.get(f"{base_url}/filmek/1/1//", headers=headers)
         soup = BeautifulSoup(page.text, 'html.parser')
 
-        categories = soup.select('a[href^="//jobbmintatv.org/filmek/1/1/"]:not(.aktiv)')
+        categories = soup.select('a[href^="//jobbmintatv.net/filmek/1/1/"]:not(.aktiv)')
         
         for category in categories:
             category_name = category.text.strip()
@@ -90,7 +90,7 @@ class navigator:
         page = requests.get(f"{base_url}/sorozatok/1/1//", headers=headers)
         soup = BeautifulSoup(page.text, 'html.parser')
 
-        categories = soup.select('a[href^="//jobbmintatv.org/sorozatok/1/1/"]:not(.aktiv)')
+        categories = soup.select('a[href^="//jobbmintatv.net/sorozatok/1/1/"]:not(.aktiv)')
         
         for category in categories:
             category_name = category.text.strip()
@@ -272,7 +272,6 @@ class navigator:
             
             en_title_element = soup_2.select_one('#sorozat_adatlap_film h1:nth-of-type(2)')
             en_title = en_title_element.text if en_title_element else None
-            year = soup_2.select_one('#adatlap_menu div:-soup-contains("Évjárat") b').text
             imdb = soup_2.select_one('#adatlap_menu div:-soup-contains("IMDb") a').text
             content = soup_2.select_one('#sorozat_adatlap_film p').text
             img_url = soup_2.select_one('#sorozat_borito_film img')['src']
@@ -299,7 +298,7 @@ class navigator:
 
         season_links = []
         evadoks = soup_2.find_all('a', class_='evadoks')
-        htt = 'https://jobbmintatv.org'
+        htt = 'https://jobbmintatv.net'
         for evadok in evadoks:
             season_number = evadok.text.strip()
             season_link = urllib.parse.urljoin(htt, evadok['href'])
@@ -332,7 +331,7 @@ class navigator:
                 'evadnez': '1',
             }
             
-            html_source = requests.get('https://jobbmintatv.org/ajax.php', params=params, headers=headers)
+            html_source = requests.get('https://jobbmintatv.net/ajax.php', params=params, headers=headers)
             
             soup_xx = BeautifulSoup(html_source.text, 'html.parser')
             
