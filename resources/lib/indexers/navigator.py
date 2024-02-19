@@ -380,15 +380,34 @@ class navigator:
     def doSearch(self, url):
         search_text = self.getSearchText()
 
-        import unicodedata
-        
-        def remove_accents(input_str):
-            nfkd_form = unicodedata.normalize('NFKD', input_str)
-            return ''.join([c for c in nfkd_form if not unicodedata.combining(c)])
+        def custom_encode(text):
+            replacements = {
+                'á': '%E1',
+                'é': '%E9',
+                'í': '%ED',
+                'ó': '%F3',
+                'ö': '%F6',
+                'ő': '%F5',
+                'ú': '%FA',
+                'ü': '%FC',
+                'ű': '%FB',
+                'ô': '%F4',
+                'õ': '%F5',
+                'û': '%FB',
+                'ũ': '%F5'
+            }
+            encoded_text = ''
+            for char in text:
+                if char == ' ':
+                    encoded_text += '%20'
+                elif char in replacements:
+                    encoded_text += replacements[char]
+                else:
+                    encoded_text += char
+            return encoded_text
 
-        without_accent = remove_accents(search_text)      
-        
-        url_k = f"{base_url}/ajax.php?keres={without_accent}"
+        encoded_search_text = custom_encode(search_text)
+        url_k = f"{base_url}/ajax.php?keres={encoded_search_text}"
         
         html_soup_2 = requests.get(url_k, headers=headers)
         html_soup_2.encoding = 'ISO-8859-2'
@@ -397,13 +416,12 @@ class navigator:
         soup = BeautifulSoup(html_soup_2.text, 'html.parser')
         
         for link in soup.find_all('a'):
-            
-            title = link.find('div').text
-            href = link.get('href')
-            url_x = urllib.parse.urljoin(httx, href)
-            
-            
-            self.addDirectoryItem(title, f'extract_movie&url={quote_plus(url_x)}', '', 'DefaultFolder.png')
+            div = link.find('div')
+            if div is not None:
+                title = div.text
+                href = link.get('href')
+                url_x = urllib.parse.urljoin(httx, href)
+                self.addDirectoryItem(title, f'extract_movie&url={quote_plus(url_x)}', '', 'DefaultFolder.png')
 
         self.endDirectory()
 
