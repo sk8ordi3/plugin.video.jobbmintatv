@@ -3,6 +3,8 @@
 
 Kodi kiegészítő a JobbMintATv-hez
 
+1.0.4 - oldalon lévő változtatás lekövetése
+
 1.0.4 - ékezetes karakterek támogatása a keresőben
 
 1.0.3 - .net használata, film (évszám) javítása

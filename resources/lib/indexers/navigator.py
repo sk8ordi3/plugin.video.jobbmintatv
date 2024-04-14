@@ -111,19 +111,21 @@ class navigator:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
                 card_link = 'https:' + card_link
-
+        
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
                 img_url = 'https:' + img_src
-            
+        
             hun_title = anchor.find('span', class_='cimk').text
-
-            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', anchor.find('span', class_='egyebekk').text)
+        
+            details = anchor.find_next_sibling('span', class_='egyebekk').text
+        
+            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', details)
             imdb = imdb_match.group(1) if imdb_match else None
-            
-            year_match = re.search(r'\d{4}', anchor.find('span', class_='egyebekk').text)
-            year = year_match.group() if year_match else None            
-            
+        
+            year_match = re.search(r'\d{4}', details)
+            year = year_match.group() if year_match else None
+        
             hun_m = f'{hun_title} - {year}'
             
             self.addDirectoryItem(f'[B]{hun_title} - {year} | [COLOR yellow]{imdb}[/COLOR][/B]', f'extract_movie&url={card_link}&img_url={img_url}&hun_title={hun_title}&year={year}', img_url, 'DefaultMovies.png', isFolder=True, meta={'title': hun_m})
@@ -151,19 +153,21 @@ class navigator:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
                 card_link = 'https:' + card_link
-            
+        
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
                 img_url = 'https:' + img_src
-            
+        
             hun_title = anchor.find('span', class_='cimk').text
-
-            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', anchor.find('span', class_='egyebekk').text)
+        
+            details = anchor.find_next_sibling('span', class_='egyebekk').text
+        
+            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', details)
             imdb = imdb_match.group(1) if imdb_match else None
-            
-            year_match = re.search(r'\d{4}', anchor.find('span', class_='egyebekk').text)
+        
+            year_match = re.search(r'\d{4}', details)
             year = year_match.group() if year_match else None
-            
+        
             hun_m = f'{hun_title} - {year}'
             
             self.addDirectoryItem(f'[B]{hun_title} - {year} | [COLOR yellow]{imdb}[/COLOR][/B]', f'extract_series&url={quote_plus(card_link)}&img_url={img_url}&hun_title={hun_title}&year={year}', img_url, 'DefaultMovies.png', isFolder=True, meta={'title': hun_m})
@@ -195,15 +199,17 @@ class navigator:
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
                 img_url = 'https:' + img_src
-
+        
             hun_title = anchor.find('span', class_='cimk').text
-
-            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', anchor.find('span', class_='egyebekk').text)
+        
+            details = anchor.find_next_sibling('span', class_='egyebekk').text
+        
+            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', details)
             imdb = imdb_match.group(1) if imdb_match else None
-            
-            year_match = re.search(r'\d{4}', anchor.find('span', class_='egyebekk').text)
-            year = year_match.group() if year_match else None            
-            
+        
+            year_match = re.search(r'\d{4}', details)
+            year = year_match.group() if year_match else None
+        
             hun_m = f'{hun_title} - {year}'
             
             self.addDirectoryItem(f'[B]{hun_title} - {year} | [COLOR yellow]{imdb}[/COLOR][/B]', f'extract_movie&url={card_link}&img_url={img_url}&hun_title={hun_title}&year={year}', img_url, 'DefaultMovies.png', isFolder=True, meta={'title': hun_m})
@@ -231,19 +237,21 @@ class navigator:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
                 card_link = 'https:' + card_link
-
+        
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
                 img_url = 'https:' + img_src
-            
+        
             hun_title = anchor.find('span', class_='cimk').text
-
-            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', anchor.find('span', class_='egyebekk').text)
+        
+            details = anchor.find_next_sibling('span', class_='egyebekk').text
+        
+            imdb_match = re.search(r'\[imdb:(\d+(\.\d+)?)\]', details)
             imdb = imdb_match.group(1) if imdb_match else None
-            
-            year_match = re.search(r'\d{4}', anchor.find('span', class_='egyebekk').text)
-            year = year_match.group() if year_match else None            
-            
+        
+            year_match = re.search(r'\d{4}', details)
+            year = year_match.group() if year_match else None
+        
             hun_m = f'{hun_title} - {year}'
             
             self.addDirectoryItem(f'[B]{hun_title} - {year} | [COLOR yellow]{imdb}[/COLOR][/B]', f'extract_series&url={quote_plus(card_link)}&img_url={img_url}&hun_title={hun_title}&year={year}', img_url, 'DefaultMovies.png', isFolder=True, meta={'title': hun_m})
