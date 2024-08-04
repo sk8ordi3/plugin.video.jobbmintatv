@@ -1,5 +1,5 @@
 ﻿[B]1.0.6[/B]
-- oldalon lévő változtatás lekövetése
+- változtatás lekövetése + videa linkek támogatása
 [B]1.0.5[/B]
 - oldalon lévő változtatás lekövetése
 [B]1.0.4[/B]

@@ -3,7 +3,7 @@
 
 Kodi kiegészítő a JobbMintATv-hez
 
-1.0.6 - oldalon lévő változtatás lekövetése
+1.0.6 - változtatás lekövetése + videa linkek támogatása
 
 1.0.5 - oldalon lévő változtatás lekövetése
 
