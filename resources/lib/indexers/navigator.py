@@ -36,10 +36,10 @@ base_log_info = f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}'
 
 xbmc.log(f'{base_log_info}', xbmc.LOGINFO)
 
-base_url = 'https://jobbmintatv.net'
+base_url = 'https://jobbmintatv.pro'
 
 headers = {
-    'authority': 'jobbmintatv.net',
+    'authority': 'jobbmintatv.pro',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36',
 }
@@ -72,30 +72,244 @@ class navigator:
         self.endDirectory()
 
     def getMovieCategories(self):
-        page = requests.get(f"{base_url}/filmek/1/1//", headers=headers)
-        soup = BeautifulSoup(page.text, 'html.parser')
-
-        categories = soup.select('a[href^="//jobbmintatv.net/filmek/1/1/"]:not(.aktiv)')
+        jsonData = {
+          "categorys": [
+            {
+              "genre": "vígjáték",
+              "url": "https://jobbmintatv.pro/filmek/1/1/vigjatek"
+            },
+            {
+              "genre": "anime",
+              "url": "https://jobbmintatv.pro/filmek/1/1/anime"
+            },
+            {
+              "genre": "akció",
+              "url": "https://jobbmintatv.pro/filmek/1/1/akcio"
+            },
+            {
+              "genre": "romantikus",
+              "url": "https://jobbmintatv.pro/filmek/1/1/romantikus"
+            },
+            {
+              "genre": "kaland",
+              "url": "https://jobbmintatv.pro/filmek/1/1/kaland"
+            },
+            {
+              "genre": "animáció",
+              "url": "https://jobbmintatv.pro/filmek/1/1/animacio"
+            },
+            {
+              "genre": "thriller",
+              "url": "https://jobbmintatv.pro/filmek/1/1/thriller"
+            },
+            {
+              "genre": "családi",
+              "url": "https://jobbmintatv.pro/filmek/1/1/csaladi"
+            },
+            {
+              "genre": "bűnügyi",
+              "url": "https://jobbmintatv.pro/filmek/1/1/bunugyi"
+            },
+            {
+              "genre": "rövidfilm",
+              "url": "https://jobbmintatv.pro/filmek/1/1/rovidfilm"
+            },
+            {
+              "genre": "musical",
+              "url": "https://jobbmintatv.pro/filmek/1/1/musical"
+            },
+            {
+              "genre": "sci-fi",
+              "url": "https://jobbmintatv.pro/filmek/1/1/sci-fi"
+            },
+            {
+              "genre": "valóságshow",
+              "url": "https://jobbmintatv.pro/filmek/1/1/valosagshow"
+            },
+            {
+              "genre": "fantasy",
+              "url": "https://jobbmintatv.pro/filmek/1/1/fantasy"
+            },
+            {
+              "genre": "misztikus",
+              "url": "https://jobbmintatv.pro/filmek/1/1/misztikus"
+            },
+            {
+              "genre": "háborús",
+              "url": "https://jobbmintatv.pro/filmek/1/1/haborus"
+            },
+            {
+              "genre": "western",
+              "url": "https://jobbmintatv.pro/filmek/1/1/western"
+            },
+            {
+              "genre": "horror",
+              "url": "https://jobbmintatv.pro/filmek/1/1/horror"
+            },
+            {
+              "genre": "történelmi",
+              "url": "https://jobbmintatv.pro/filmek/1/1/tortenelni"
+            },
+            {
+              "genre": "sport",
+              "url": "https://jobbmintatv.pro/filmek/1/1/sport"
+            },
+            {
+              "genre": "zene",
+              "url": "https://jobbmintatv.pro/filmek/1/1/zene"
+            },
+            {
+              "genre": "dráma",
+              "url": "https://jobbmintatv.pro/filmek/1/1/drama"
+            },
+            {
+              "genre": "életrajz",
+              "url": "https://jobbmintatv.pro/filmek/1/1/eletrajzi"
+            },
+            {
+              "genre": "dokumentum",
+              "url": "https://jobbmintatv.pro/filmek/1/1/dokumentum"
+            },
+            {
+              "genre": "karácsonyi",
+              "url": "https://jobbmintatv.pro/filmek/1/1/karacsonyi"
+            },
+            {
+              "genre": "török",
+              "url": "https://jobbmintatv.pro/filmek/1/1/torok"
+            },
+            {
+              "genre": "feliratos",
+              "url": "https://jobbmintatv.pro/filmek/1/1/feliratos"
+            }
+		  ]
+        }
         
-        for category in categories:
-            category_name = category.text.strip()
-            category_url = 'https:' + category['href']
-            category_num =  re.findall(r'.*/(.*)', category_url)[0].strip()
+        for movie in jsonData['categorys']:
+            category_name = movie['genre']
+            category_url = movie['url']
 
             self.addDirectoryItem(f"{category_name}", f'movie_items&url={category_url}', '', 'DefaultFolder.png')
         
         self.endDirectory('movies')
 
     def getSeriesCategories(self):
-        page = requests.get(f"{base_url}/sorozatok/1/1//", headers=headers)
-        soup = BeautifulSoup(page.text, 'html.parser')
-
-        categories = soup.select('a[href^="//jobbmintatv.net/sorozatok/1/1/"]:not(.aktiv)')
+        jsonData = {
+          "categorys": [
+            {
+              "genre": "vígjáték",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/vigjatek"
+            },
+            {
+              "genre": "anime",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/anime"
+            },
+            {
+              "genre": "akció",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/akcio"
+            },
+            {
+              "genre": "romantikus",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/romantikus"
+            },
+            {
+              "genre": "kaland",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/kaland"
+            },
+            {
+              "genre": "animáció",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/animacio"
+            },
+            {
+              "genre": "thriller",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/thriller"
+            },
+            {
+              "genre": "családi",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/csaladi"
+            },
+            {
+              "genre": "bűnügyi",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/bunugyi"
+            },
+            {
+              "genre": "rövidfilm",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/rovidfilm"
+            },
+            {
+              "genre": "musical",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/musical"
+            },
+            {
+              "genre": "sci-fi",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/sci-fi"
+            },
+            {
+              "genre": "valóságshow",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/valosagshow"
+            },
+            {
+              "genre": "fantasy",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/fantasy"
+            },
+            {
+              "genre": "misztikus",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/misztikus"
+            },
+            {
+              "genre": "háborús",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/haborus"
+            },
+            {
+              "genre": "western",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/western"
+            },
+            {
+              "genre": "horror",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/horror"
+            },
+            {
+              "genre": "történelmi",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/tortenelni"
+            },
+            {
+              "genre": "sport",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/sport"
+            },
+            {
+              "genre": "zene",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/zene"
+            },
+            {
+              "genre": "dráma",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/drama"
+            },
+            {
+              "genre": "életrajz",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/eletrajzi"
+            },
+            {
+              "genre": "dokumentum",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/dokumentum"
+            },
+            {
+              "genre": "karácsonyi",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/karacsonyi"
+            },
+            {
+              "genre": "török",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/torok"
+            },
+            {
+              "genre": "feliratos",
+              "url": "https://jobbmintatv.pro/sorozatok/1/1/feliratos"
+            }
+		  ]
+        }
         
-        for category in categories:
-            category_name = category.text.strip()
-            category_url = 'https:' + category['href']
-            category_num =  re.findall(r'.*/(.*)', category_url)[0].strip()
+        for movie in jsonData['categorys']:
+            category_name = movie['genre']
+            category_url = movie['url']
 
             self.addDirectoryItem(f"{category_name}", f'series_items&url={category_url}', '', 'DefaultFolder.png')
         
@@ -110,11 +324,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = 'https:' + card_link
+                card_link = base_url + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = 'https:' + img_src
+                img_url = base_url + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -134,8 +348,8 @@ class navigator:
             next_page_anchor = soup.find('a', string='következő oldal')
             if next_page_anchor:
                 next_page = next_page_anchor['href']
-                htt = 'https:'
-                next_page_url = htt + next_page
+                
+                next_page_url = base_url + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'movie_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except AttributeError:
@@ -152,11 +366,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = 'https:' + card_link
+                card_link = base_url + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = 'https:' + img_src
+                img_url = base_url + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -176,8 +390,8 @@ class navigator:
             next_page_anchor = soup.find('a', string='következő oldal')
             if next_page_anchor:
                 next_page = next_page_anchor['href']
-                httx = 'https:'
-                next_page_url = httx + next_page
+                
+                next_page_url = base_url + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'series_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except AttributeError:
@@ -194,11 +408,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = 'https:' + card_link
+                card_link = base_url + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = 'https:' + img_src
+                img_url = base_url + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -218,8 +432,8 @@ class navigator:
             next_page_anchor = soup.find('a', string='következő oldal')
             if next_page_anchor:
                 next_page = next_page_anchor['href']
-                htt = 'https:'
-                next_page_url = htt + next_page
+                
+                next_page_url = base_url + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'movie_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except (AttributeError, UnboundLocalError):
@@ -236,11 +450,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = 'https:' + card_link
+                card_link = base_url + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = 'https:' + img_src
+                img_url = base_url + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -260,8 +474,7 @@ class navigator:
             next_page_anchor = soup.find('a', string='következő oldal')
             if next_page_anchor:
                 next_page = next_page_anchor['href']
-                httx = 'https:'
-                next_page_url = httx + next_page
+                next_page_url = base_url + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'series_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except (AttributeError, UnboundLocalError):
@@ -286,7 +499,7 @@ class navigator:
             video_src = soup_2.select_one('#video iframe')['src']
             
             if not re.match(r'https?://', img_url):
-                img_url = 'https:' + img_url
+                img_url = base_url + img_url
             
             if not re.match(r'https?://', video_src):
                 video_src = 'https:' + video_src
@@ -306,7 +519,7 @@ class navigator:
 
         season_links = []
         evadoks = soup_2.find_all('a', class_='evadoks')
-        htt = 'https://jobbmintatv.net'
+        htt = 'https://jobbmintatv.pro'
         for evadok in evadoks:
             season_number = evadok.text.strip()
             season_link = urllib.parse.urljoin(htt, evadok['href'])
@@ -339,7 +552,7 @@ class navigator:
                 'evadnez': '1',
             }
             
-            html_source = requests.get('https://jobbmintatv.net/ajax.php', params=params, headers=headers)
+            html_source = requests.get('https://jobbmintatv.pro/ajax.php', params=params, headers=headers)
             
             soup_xx = BeautifulSoup(html_source.text, 'html.parser')
             
