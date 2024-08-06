@@ -330,11 +330,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = base_url + card_link
+                card_link = 'https:' + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = base_url + img_src
+                img_url = 'https:' + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -355,7 +355,7 @@ class navigator:
             if next_page_anchor:
                 next_page = next_page_anchor['href']
                 
-                next_page_url = base_url + next_page
+                next_page_url = 'https:' + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'movie_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except AttributeError:
@@ -372,11 +372,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = base_url + card_link
+                card_link = 'https:' + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = base_url + img_src
+                img_url = 'https:' + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -397,7 +397,7 @@ class navigator:
             if next_page_anchor:
                 next_page = next_page_anchor['href']
                 
-                next_page_url = base_url + next_page
+                next_page_url = 'https:' + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'series_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except AttributeError:
@@ -414,11 +414,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = base_url + card_link
+                card_link = 'https:' + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = base_url + img_src
+                img_url = 'https:' + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -439,7 +439,7 @@ class navigator:
             if next_page_anchor:
                 next_page = next_page_anchor['href']
                 
-                next_page_url = base_url + next_page
+                next_page_url = 'https:' + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'movie_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except (AttributeError, UnboundLocalError):
@@ -456,11 +456,11 @@ class navigator:
         for anchor in anchors:
             card_link = anchor['href']
             if not re.match(r'https?://', card_link):
-                card_link = base_url + card_link
+                card_link = 'https:' + card_link
         
             img_src = anchor.find('img')['src']
             if not re.match(r'https?://', img_src):
-                img_url = base_url + img_src
+                img_url = 'https:' + img_src
         
             hun_title = anchor.find('span', class_='cimk').text
         
@@ -480,7 +480,7 @@ class navigator:
             next_page_anchor = soup.find('a', string='következő oldal')
             if next_page_anchor:
                 next_page = next_page_anchor['href']
-                next_page_url = base_url + next_page
+                next_page_url = 'https:' + next_page
             
             self.addDirectoryItem('[I]Következő oldal[/I]', f'series_items&url={quote_plus(next_page_url)}', '', 'DefaultFolder.png')
         except (AttributeError, UnboundLocalError):
@@ -505,7 +505,7 @@ class navigator:
             video_src = soup_2.select_one('#video iframe')['src']
             
             if not re.match(r'https?://', img_url):
-                img_url = base_url + img_url
+                img_url = 'https:' + img_url
             
             if not re.match(r'https?://', video_src):
                 video_src = 'https:' + video_src
