@@ -600,17 +600,13 @@ class navigator:
             def rc4(cipher_text, key):
                 def compat_ord(c):
                     return c if isinstance(c, int) else ord(c)
-            
                 res = b''
-            
                 key_len = len(key)
                 S = list(range(256))
-            
                 j = 0
                 for i in range(256):
                     j = (j + S[i] + ord(key[i % key_len])) % 256
                     S[i], S[j] = S[j], S[i]
-            
                 i = 0
                 j = 0
                 for m in range(len(cipher_text)):
@@ -619,11 +615,8 @@ class navigator:
                     S[i], S[j] = S[j], S[i]
                     k = S[(S[i] + S[j]) % 256]
                     res += struct.pack('B', k ^ compat_ord(cipher_text[m]))
-            
-                if sys.version_info[0] == 3:
-                    return res.decode()
-                else:
-                    return res
+                if sys.version_info[0] == 3: return res.decode()
+                else: return res
             
             headers = {
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -631,95 +624,121 @@ class navigator:
             }
             
             session = requests.Session()
-            response = session.get(url, cookies={"session_adult": "1"})
             
-            video_page = response.text
-            
-            if '/player' in url:
-                player_url = url
-                player_page = video_page
-            else:
-                player_url = re.search(r'<iframe.*?src="(/player\?[^"]+)"', video_page).group(1)
-                player_url = urljoin(url, player_url)
-                response = session.get(player_url)
-                player_page = response.text
-            
-            nonce = re.search(r'_xt\s*=\s*"([^"]+)"', player_page).group(1)
-            
-            l = nonce[:32]
-            s = nonce[32:]
-            result = ''
-            for i in range(0, 32):
-                result += s[i - (STATIC_SECRET.index(l[i]) - 31)]
-            
-            query = parse_qs(urlparse(player_url).query)
-            
-            random_seed = ''
-            for i in range(8):
-                random_seed += random.choice(string.ascii_letters + string.digits)
-            
-            _s = random_seed
-            _t = result[:16]
-            if 'f' in query or 'v' in query:
-                _param = f'f={query["f"][0]}' if 'f' in query else f'v={query["v"][0]}'
-            response = session.get(f'https://videa.hu/player/xml?platform=desktop&{_param}&_s={_s}&_t={_t}')
-            
-            videaXml = response.text
-            if not videaXml.startswith('<?xml'):
-                key = result[16:] + random_seed + response.headers['x-videa-xs']
-                videaXml = rc4(base64.b64decode(videaXml), key)            
-            
-            try:        
-                videaData = xmltodict.parse(videaXml)
-
-                sources = videaData["videa_video"]["video_sources"]["video_source"]
-                if isinstance(sources, list):
-                    sorted_sources = sorted(sources, key=lambda x: int(x["@width"]), reverse=True)
-                else:
-                    sorted_sources = [sources]
-
-                selected_source = sorted_sources[0]
-                s_format = selected_source["@name"]
-                s_url = selected_source["#text"]
-                s_exp = selected_source["@exp"]
-
-                hash_key = "hash_value_" + s_format
-                hash_x_key = videaData["videa_video"]["hash_values"][hash_key]
-                video_url = f'https:{s_url}?md5={hash_x_key}&expires={s_exp}'
+            processing_url = url
+            max_redirects = 5
+            final_video_url = None
+            videaData_final = None
+    
+            for _ in range(max_redirects):
+                if 'videa' not in processing_url:
+                    final_video_url = processing_url
+                    break
                 
-                xbmc.log(f'{base_log_info}| playMovie | video_url: {video_url}', xbmc.LOGINFO)
-
-                play_item = xbmcgui.ListItem(path=video_url)
-
                 try:
-                    subtitles = videaData["videa_video"]["subtitles"]["subtitle"]
-                    subtitle_urls = []
-            
-                    if isinstance(subtitles, list):
-                        for subtitle in subtitles:
-                            subtitle_url = 'https:' + subtitle["@src"]
-                            subtitle_urls.append(subtitle_url)
+                    response = session.get(processing_url, cookies={"session_adult": "1"}, headers=headers)
+                    video_page = response.text
+                    
+                    if '/player' in processing_url:
+                        player_url = processing_url
+                        player_page = video_page
                     else:
-                        subtitle_url = 'https:' + subtitles["@src"]
-                        subtitle_urls.append(subtitle_url)
-
-                    play_item.setSubtitles(subtitle_urls)
-                    xbmc.log(f'{base_log_info}| playMovie | subtitles: {subtitle_urls}', xbmc.LOGINFO)
-                except KeyError:
-                    xbmc.log(f'{base_log_info}| playMovie | No subtitles found', xbmc.LOGINFO)
-
-                xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
+                        player_url_match = re.search(r'<iframe.*?src="(/player\?[^"]+)"', video_page)
+                        if not player_url_match:
+                            break
+                        
+                        player_url = urljoin(processing_url, player_url_match.group(1))
+                        response = session.get(player_url, headers=headers)
+                        player_page = response.text
+                    
+                    nonce_match = re.search(r'_xt\s*=\s*"([^"]+)"', player_page)
+                    if not nonce_match:
+                        break
+                    
+                    nonce = nonce_match.group(1)
+    
+                    l, s = nonce[:32], nonce[32:]
+                    result = ''.join([s[i - (STATIC_SECRET.index(l[i]) - 31)] for i in range(32)])
+                    
+                    query = parse_qs(urlparse(player_url).query)
+                    
+                    random_seed = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
+                    
+                    _s, _t = random_seed, result[:16]
+                    if 'f' in query or 'v' in query:
+                        _param = f'f={query["f"][0]}' if 'f' in query else f'v={query["v"][0]}'
+                    else:
+                        break
+                        
+                    xml_response = session.get(f'https://videa.hu/player/xml?platform=desktop&{_param}&_s={_s}&_t={_t}')
+                    
+                    videaXml = xml_response.text
+                    if not videaXml.startswith('<?xml'):
+                        key = result[16:] + random_seed + xml_response.headers['x-videa-xs']
+                        videaXml = rc4(base64.b64decode(videaXml), key)
+                    
+                    videaData = xmltodict.parse(videaXml)
+    
+                    video_node = videaData.get('videa_video', {})
+                    if 'error' in video_node:
+                        error_node = video_node['error']
+                        if '#text' in error_node and 'videa.hu' in error_node['#text']:
+                            new_url = error_node['#text']
+                            processing_url = new_url
+                            continue
+                        else:
+                            break
+                    
+                    elif 'video_sources' in video_node:
+                        videaData_final = videaData
+                        sources = video_node["video_sources"]["video_source"]
+                        
+                        if isinstance(sources, list):
+                            sorted_sources = sorted(sources, key=lambda x: int(x["@width"]), reverse=True)
+                        else:
+                            sorted_sources = [sources]
+    
+                        selected_source = sorted_sources[0]
+                        s_url = selected_source["#text"]
+                        s_format = selected_source["@name"]
+                        s_exp = selected_source["@exp"]
+                        hash_key = "hash_value_" + s_format
+                        hash_x_key = video_node["hash_values"][hash_key]
+                        
+                        final_video_url = f'https:{s_url}?md5={hash_x_key}&expires={s_exp}'
+                        break
+                    else:
+                        break
+    
+                except Exception as e:
+                    import traceback
+                    final_video_url = None
+                    break
+    
+            if final_video_url:
+                play_item = xbmcgui.ListItem(path=final_video_url)
                 
-            except Exception as e:
-                xbmc.log(f'{base_log_info}| playMovie | Error: {str(e)}', xbmc.LOGINFO)
+                if videaData_final:
+                    try:
+                        subtitles = videaData_final["videa_video"]["subtitles"]["subtitle"]
+                        subtitle_urls = []
+                        if isinstance(subtitles, list):
+                            for subtitle in subtitles:
+                                subtitle_urls.append('https:' + subtitle["@src"])
+                        else:
+                            subtitle_urls.append('https:' + subtitles["@src"])
+                        play_item.setSubtitles(subtitle_urls)
+                    except (KeyError, TypeError):
+                        xbmc.log(f'{base_log_info}| playMovie | No subtitles found', xbmc.LOGINFO)
+    
+                xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
+            else:
+                xbmc.log(f'{base_log_info}| playMovie | Törölt vagy hibás Videa link', xbmc.LOGERROR)
                 notification = xbmcgui.Dialog()
-                notification.notification("filmy.hu", "Törölt tartalom", time=5000)            
-            ###
-        
+                notification.notification("JobbMintATv.hu", "Törölt vagy hibás Videa link", time=5000)
         else:
             try:
                 direct_url = urlresolver.resolve(url)
-                
                 xbmc.log(f'{base_log_info}| playMovie (else) | direct_url: {direct_url}', xbmc.LOGINFO)
                 play_item = xbmcgui.ListItem(path=direct_url)
                 xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)

@@ -1,4 +1,6 @@
-﻿[B]1.0.7[/B]
+﻿[B]1.0.8[/B]
+- videa változtatás lekövetése
+[B]1.0.7[/B]
 - változtatás lekövetése
 [B]1.0.6[/B]
 - változtatás lekövetése + videa linkek támogatása
