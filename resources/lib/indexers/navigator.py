@@ -584,7 +584,6 @@ class navigator:
 
         if iframe:
             iframe_src = iframe.get('src')
-            xbmc.log(f'{base_log_info}| extractEpisodes | iframe_src | {iframe_src}', xbmc.LOGINFO)
             
             hun_ep = f'{ep_title} - {hun_title} - {year}'
             
