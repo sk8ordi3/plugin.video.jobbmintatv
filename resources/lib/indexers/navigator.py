@@ -52,11 +52,11 @@ headers = {
 
 if sys.version_info[0] == 3:
     from xbmcvfs import translatePath
-    from urllib.parse import urlparse, quote_plus
+    from urllib.parse import urlparse, quote, quote_plus
 else:
     from xbmc import translatePath
     from urlparse import urlparse
-    from urllib import quote_plus
+    from urllib import quote, quote_plus
 
 class navigator:
     def __init__(self):
@@ -737,7 +737,9 @@ class navigator:
                 notification.notification("JobbMintATv.hu", "Törölt vagy hibás Videa link", time=5000)
         else:
             try:
-                direct_url = urlresolver.resolve(url)
+                quoted_url = quote(url, safe=':/')
+                direct_url = urlresolver.resolve(quoted_url)
+                
                 xbmc.log(f'{base_log_info}| playMovie (else) | direct_url: {direct_url}', xbmc.LOGINFO)
                 play_item = xbmcgui.ListItem(path=direct_url)
                 xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)

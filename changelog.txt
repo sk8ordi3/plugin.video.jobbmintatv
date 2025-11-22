@@ -1,5 +1,5 @@
 ﻿[B]1.0.8[/B]
-- videa változtatás lekövetése
+- videa változtatás lekövetése, indavideo javítása
 [B]1.0.7[/B]
 - változtatás lekövetése
 [B]1.0.6[/B]
