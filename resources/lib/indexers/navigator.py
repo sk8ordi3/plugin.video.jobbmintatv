@@ -736,14 +736,24 @@ class navigator:
                 notification = xbmcgui.Dialog()
                 notification.notification("JobbMintATv.hu", "Törölt vagy hibás Videa link", time=5000)
         else:
+            resolved_url = None
             try:
-                quoted_url = quote(url, safe=':/')
-                direct_url = urlresolver.resolve(quoted_url)
+                url_to_resolve = url
+                if re.search('.*indavideo.*', url):
+                    url_to_resolve = quote(url, safe=':/')
+
+                resolved_url = urlresolver.resolve(url_to_resolve)
+                if '|' in resolved_url:
+                    base_url, params = resolved_url.split('|', 1)
+                    encoded_params = quote_plus(params)
+                    resolved_url = f'{base_url}|{encoded_params}'
+
+                play_item = xbmcgui.ListItem(path=resolved_url)
                 
-                xbmc.log(f'{base_log_info}| playMovie (else) | direct_url: {direct_url}', xbmc.LOGINFO)
-                play_item = xbmcgui.ListItem(path=direct_url)
+                xbmc.log(f'{base_log_info}| playMovie | (if/else) | resolved_url: {resolved_url}', xbmc.LOGINFO)
                 xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
-            except:
+            except Exception as e:
+                xbmc.log(f'{base_log_info}| playMovie | Hiba a feloldásnál: {e}', xbmc.LOGERROR)
                 xbmc.log(f'{base_log_info}| playMovie | name: No video sources found', xbmc.LOGINFO)
                 notification = xbmcgui.Dialog()
                 notification.notification("JobbMintATv", "Törölt tartalom", time=5000)
