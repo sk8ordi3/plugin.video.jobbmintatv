@@ -3,6 +3,8 @@
 
 Kodi kiegészítő a JobbMintATv-hez
 
+1.0.9 - változtatás lekövetése
+
 1.0.8 - videa változtatás lekövetése, indavideo javítása
 
 1.0.7 - változtatás lekövetése

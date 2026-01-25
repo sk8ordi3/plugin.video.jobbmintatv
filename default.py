@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 '''
-    JobbMintATv Add-on
-    Copyright (C) 2020 heg, vargalex
+    JobbMintATv Addon
+    Copyright (C) 2026 heg, vargalex
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,8 @@ if sys.version_info[0] == 3:
 else:
     from urlparse import parse_qsl
 
-params = dict(parse_qsl(sys.argv[2].replace('?', '')))
+query_string = sys.argv[2][1:] if sys.argv[2].startswith('?') else sys.argv[2]
+params = dict(parse_qsl(query_string))
 
 action = params.get('action')
 url = params.get('url')

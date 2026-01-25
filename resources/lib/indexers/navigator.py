@@ -2,7 +2,7 @@
 
 '''
     JobbMintATv Addon
-    Copyright (C) 2023 heg, vargalex
+    Copyright (C) 2026 heg, vargalex
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -715,7 +715,25 @@ class navigator:
                     break
     
             if final_video_url:
-                play_item = xbmcgui.ListItem(path=final_video_url)
+                session_cookies = session.cookies.get_dict()
+                cookie_str = '; '.join([f'{k}={v}' for k, v in session_cookies.items()])
+
+                if 'sl' not in cookie_str:
+                    cookie_str += '; sl=; session_adult=1'
+
+                ua = headers.get('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
+                
+                header_params = [
+                    f'User-Agent={quote_plus(ua)}',
+                    f'Referer={quote_plus("https://videa.hu/")}',
+                    f'Origin={quote_plus("https://videa.hu")}',
+                    f'Cookie={quote_plus(cookie_str)}',
+                    'Accept=*/*'
+                ]
+
+                full_url_with_headers = final_video_url + '|' + '&'.join(header_params)
+                
+                play_item = xbmcgui.ListItem(path=full_url_with_headers)
                 
                 if videaData_final:
                     try:
@@ -728,7 +746,7 @@ class navigator:
                             subtitle_urls.append('https:' + subtitles["@src"])
                         play_item.setSubtitles(subtitle_urls)
                     except (KeyError, TypeError):
-                        xbmc.log(f'{base_log_info}| playMovie | No subtitles found', xbmc.LOGINFO)
+                        pass
     
                 xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
             else:
@@ -740,7 +758,7 @@ class navigator:
             try:
                 url_to_resolve = url
                 if re.search('.*indavideo.*', url):
-                    url_to_resolve = quote(url, safe=':/')
+                    url_to_resolve = quote(url, safe=':/?=&')
 
                 resolved_url = urlresolver.resolve(url_to_resolve)
                 if '|' in resolved_url:
