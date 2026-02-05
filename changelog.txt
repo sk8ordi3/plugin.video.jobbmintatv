@@ -1,4 +1,6 @@
-﻿[B]1.0.9[/B]
+﻿[B]1.1.0[/B]
+- váltás reolveurlre
+[B]1.0.9[/B]
 - változtatás lekövetése
 [B]1.0.8[/B]
 - videa változtatás lekövetése, indavideo javítása

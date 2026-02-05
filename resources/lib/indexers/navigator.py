@@ -24,13 +24,9 @@ import requests
 import urllib.parse
 import resolveurl as urlresolver
 from resources.lib.modules.utils import py2_decode, py2_encode
-from resources.lib.modules import xmltodict
 import html
 
 from urllib.parse import urljoin, urlparse, parse_qs
-import struct
-import random
-import string
 
 sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
@@ -592,189 +588,25 @@ class navigator:
         self.endDirectory('series')
 
     def playMovie(self, url):
-        if re.search('.*videa.*', url):
-            
-            STATIC_SECRET = 'xHb0ZvME5q8CBcoQi6AngerDu3FGO9fkUlwPmLVY_RTzj2hJIS4NasXWKy1td7p'
-            
-            def rc4(cipher_text, key):
-                def compat_ord(c):
-                    return c if isinstance(c, int) else ord(c)
-                res = b''
-                key_len = len(key)
-                S = list(range(256))
-                j = 0
-                for i in range(256):
-                    j = (j + S[i] + ord(key[i % key_len])) % 256
-                    S[i], S[j] = S[j], S[i]
-                i = 0
-                j = 0
-                for m in range(len(cipher_text)):
-                    i = (i + 1) % 256
-                    j = (j + S[i]) % 256
-                    S[i], S[j] = S[j], S[i]
-                    k = S[(S[i] + S[j]) % 256]
-                    res += struct.pack('B', k ^ compat_ord(cipher_text[m]))
-                if sys.version_info[0] == 3: return res.decode()
-                else: return res
-            
-            headers = {
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-            }
-            
-            session = requests.Session()
-            
-            processing_url = url
-            max_redirects = 5
-            final_video_url = None
-            videaData_final = None
-    
-            for _ in range(max_redirects):
-                if 'videa' not in processing_url:
-                    final_video_url = processing_url
-                    break
-                
-                try:
-                    response = session.get(processing_url, cookies={"session_adult": "1"}, headers=headers)
-                    video_page = response.text
-                    
-                    if '/player' in processing_url:
-                        player_url = processing_url
-                        player_page = video_page
-                    else:
-                        player_url_match = re.search(r'<iframe.*?src="(/player\?[^"]+)"', video_page)
-                        if not player_url_match:
-                            break
-                        
-                        player_url = urljoin(processing_url, player_url_match.group(1))
-                        response = session.get(player_url, headers=headers)
-                        player_page = response.text
-                    
-                    nonce_match = re.search(r'_xt\s*=\s*"([^"]+)"', player_page)
-                    if not nonce_match:
-                        break
-                    
-                    nonce = nonce_match.group(1)
-    
-                    l, s = nonce[:32], nonce[32:]
-                    result = ''.join([s[i - (STATIC_SECRET.index(l[i]) - 31)] for i in range(32)])
-                    
-                    query = parse_qs(urlparse(player_url).query)
-                    
-                    random_seed = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
-                    
-                    _s, _t = random_seed, result[:16]
-                    if 'f' in query or 'v' in query:
-                        _param = f'f={query["f"][0]}' if 'f' in query else f'v={query["v"][0]}'
-                    else:
-                        break
-                        
-                    xml_response = session.get(f'https://videa.hu/player/xml?platform=desktop&{_param}&_s={_s}&_t={_t}')
-                    
-                    videaXml = xml_response.text
-                    if not videaXml.startswith('<?xml'):
-                        key = result[16:] + random_seed + xml_response.headers['x-videa-xs']
-                        videaXml = rc4(base64.b64decode(videaXml), key)
-                    
-                    videaData = xmltodict.parse(videaXml)
-    
-                    video_node = videaData.get('videa_video', {})
-                    if 'error' in video_node:
-                        error_node = video_node['error']
-                        if '#text' in error_node and 'videa.hu' in error_node['#text']:
-                            new_url = error_node['#text']
-                            processing_url = new_url
-                            continue
-                        else:
-                            break
-                    
-                    elif 'video_sources' in video_node:
-                        videaData_final = videaData
-                        sources = video_node["video_sources"]["video_source"]
-                        
-                        if isinstance(sources, list):
-                            sorted_sources = sorted(sources, key=lambda x: int(x["@width"]), reverse=True)
-                        else:
-                            sorted_sources = [sources]
-    
-                        selected_source = sorted_sources[0]
-                        s_url = selected_source["#text"]
-                        s_format = selected_source["@name"]
-                        s_exp = selected_source["@exp"]
-                        hash_key = "hash_value_" + s_format
-                        hash_x_key = video_node["hash_values"][hash_key]
-                        
-                        final_video_url = f'https:{s_url}?md5={hash_x_key}&expires={s_exp}'
-                        break
-                    else:
-                        break
-    
-                except Exception as e:
-                    import traceback
-                    final_video_url = None
-                    break
-    
-            if final_video_url:
-                session_cookies = session.cookies.get_dict()
-                cookie_str = '; '.join([f'{k}={v}' for k, v in session_cookies.items()])
+        resolved_url = None
+        try:
+            url_to_resolve = url
+            if re.search('.*indavideo.*', url):
+                url_to_resolve = quote(url, safe=':/?=&')
 
-                if 'sl' not in cookie_str:
-                    cookie_str += '; sl=; session_adult=1'
-
-                ua = headers.get('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36')
-                
-                header_params = [
-                    f'User-Agent={quote_plus(ua)}',
-                    f'Referer={quote_plus("https://videa.hu/")}',
-                    f'Origin={quote_plus("https://videa.hu")}',
-                    f'Cookie={quote_plus(cookie_str)}',
-                    'Accept=*/*'
-                ]
-
-                full_url_with_headers = final_video_url + '|' + '&'.join(header_params)
-                
-                play_item = xbmcgui.ListItem(path=full_url_with_headers)
-                
-                if videaData_final:
-                    try:
-                        subtitles = videaData_final["videa_video"]["subtitles"]["subtitle"]
-                        subtitle_urls = []
-                        if isinstance(subtitles, list):
-                            for subtitle in subtitles:
-                                subtitle_urls.append('https:' + subtitle["@src"])
-                        else:
-                            subtitle_urls.append('https:' + subtitles["@src"])
-                        play_item.setSubtitles(subtitle_urls)
-                    except (KeyError, TypeError):
-                        pass
-    
+            resolved_url = urlresolver.resolve(url_to_resolve)
+            if resolved_url:
+                play_item = xbmcgui.ListItem(path=resolved_url)
+                xbmc.log(f'{base_log_info}| playMovie | resolved_url: {resolved_url}', xbmc.LOGINFO)
                 xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
             else:
-                xbmc.log(f'{base_log_info}| playMovie | Törölt vagy hibás Videa link', xbmc.LOGERROR)
-                notification = xbmcgui.Dialog()
-                notification.notification("JobbMintATv.hu", "Törölt vagy hibás Videa link", time=5000)
-        else:
-            resolved_url = None
-            try:
-                url_to_resolve = url
-                if re.search('.*indavideo.*', url):
-                    url_to_resolve = quote(url, safe=':/?=&')
+                raise Exception("nincs video...")
+        except Exception as e:
+            xbmc.log(f'{base_log_info}| playMovie | Hiba: {e}', xbmc.LOGERROR)
+            notification = xbmcgui.Dialog()
+            notification.notification("JobbMintATv", "A videó nem érhető el vagy törölték.", time=5000)
 
-                resolved_url = urlresolver.resolve(url_to_resolve)
-                if '|' in resolved_url:
-                    base_url, params = resolved_url.split('|', 1)
-                    encoded_params = quote_plus(params)
-                    resolved_url = f'{base_url}|{encoded_params}'
-
-                play_item = xbmcgui.ListItem(path=resolved_url)
-                
-                xbmc.log(f'{base_log_info}| playMovie | (if/else) | resolved_url: {resolved_url}', xbmc.LOGINFO)
-                xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
-            except Exception as e:
-                xbmc.log(f'{base_log_info}| playMovie | Hiba a feloldásnál: {e}', xbmc.LOGERROR)
-                xbmc.log(f'{base_log_info}| playMovie | name: No video sources found', xbmc.LOGINFO)
-                notification = xbmcgui.Dialog()
-                notification.notification("JobbMintATv", "Törölt tartalom", time=5000)
+            xbmcplugin.setResolvedUrl(syshandle, False, listitem=xbmcgui.ListItem())
 
     def doSearch(self, url):
         search_text = self.getSearchText()
