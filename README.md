@@ -3,7 +3,7 @@
 
 Kodi kiegészítő a JobbMintATv-hez
 
-1.0.0 - váltás reolveurlre
+1.1.0 - váltás reolveurlre
 
 1.0.9 - változtatás lekövetése
 
