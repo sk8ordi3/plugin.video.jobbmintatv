@@ -1,5 +1,5 @@
 ﻿[B]1.1.0[/B]
-- váltás reolveurlre
+- váltás resolveurlre
 [B]1.0.9[/B]
 - változtatás lekövetése
 [B]1.0.8[/B]
