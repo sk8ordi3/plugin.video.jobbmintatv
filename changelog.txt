@@ -1,4 +1,6 @@
-﻿[B]1.1.0[/B]
+﻿[B]1.1.1[/B]
+- Beállításokban megjelenés változtatása, ha nem az alap Estuary skint használod
+[B]1.1.0[/B]
 - váltás resolveurlre
 [B]1.0.9[/B]
 - változtatás lekövetése

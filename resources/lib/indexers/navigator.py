@@ -28,13 +28,16 @@ import html
 
 from urllib.parse import urljoin, urlparse, parse_qs
 
+addon = xbmcaddon.Addon('plugin.video.jobbmintatv')
+
 sysaddon = sys.argv[0]
 syshandle = int(sys.argv[1])
 addonFanart = xbmcaddon.Addon().getAddonInfo('fanart')
 
 version = xbmcaddon.Addon().getAddonInfo('version')
 kodi_version = xbmc.getInfoLabel('System.BuildVersion')
-base_log_info = f'JobbMintATv | v{version} | Kodi: {kodi_version[:5]}'
+addon_name = 'JobbMintATv'
+base_log_info = f'{addon_name} | v{version} | Kodi: {kodi_version[:5]}'
 
 xbmc.log(f'{base_log_info}', xbmc.LOGINFO)
 
@@ -54,6 +57,10 @@ else:
     from urlparse import urlparse
     from urllib import quote, quote_plus
 
+custom_view_list = addon.getSetting('custom_view_list')
+fixed_wide_view = 'series'
+user_change_view = 'movies'
+
 class navigator:
     def __init__(self):
         try:
@@ -71,7 +78,11 @@ class navigator:
         self.addDirectoryItem("Film Kategóriák", "movie_categories", '', 'DefaultFolder.png')
         self.addDirectoryItem("Sorozat Kategóriák", "series_categories", '', 'DefaultFolder.png')
         self.addDirectoryItem("Keresés", "newsearch", '', 'DefaultFolder.png')
-        self.endDirectory()
+        
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def getMovieCategories(self):
         jsonData = {
@@ -193,7 +204,10 @@ class navigator:
 
             self.addDirectoryItem(f"{category_name}", f'movie_items&url={category_url}', '', 'DefaultFolder.png')
         
-        self.endDirectory('movies')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def getSeriesCategories(self):
         jsonData = {
@@ -315,7 +329,10 @@ class navigator:
 
             self.addDirectoryItem(f"{category_name}", f'series_items&url={category_url}', '', 'DefaultFolder.png')
         
-        self.endDirectory('series')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def getOnlyMovies(self):
         page = requests.get(f"{base_url}/filmek/1/1//", headers=headers)
@@ -357,7 +374,10 @@ class navigator:
         except AttributeError:
             xbmc.log(f'{base_log_info}| getOnlyMovies | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
-        self.endDirectory('movies')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def getOnlySeries(self):
         page = requests.get(f"{base_url}/sorozatok/1/1//", headers=headers)
@@ -399,7 +419,10 @@ class navigator:
         except AttributeError:
             xbmc.log(f'{base_log_info}| getOnlySeries | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
-        self.endDirectory('movies')      
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)    
 
     def getMovieItems(self, url, img_url, hun_title, content, year):
         page = requests.get(url, headers=headers)
@@ -441,7 +464,10 @@ class navigator:
         except (AttributeError, UnboundLocalError):
             xbmc.log(f'{base_log_info}| getMovieItems | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
-        self.endDirectory('movies')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def getSeriesItems(self, url, img_url, hun_title, year):
         page = requests.get(url, headers=headers)
@@ -482,7 +508,10 @@ class navigator:
         except (AttributeError, UnboundLocalError):
             xbmc.log(f'{base_log_info}| getSeriesItems | next_page_url | csak egy oldal található', xbmc.LOGINFO)
         
-        self.endDirectory('series')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def extractMovie(self, url, img_url, hun_title, content, year):
         
@@ -510,7 +539,10 @@ class navigator:
             
             self.addDirectoryItem(f'[B]{hun_title} - {year} | [COLOR yellow]{imdb}[/COLOR][/B]', f'playmovie&url={quote_plus(video_src)}&img_url={img_url}&hun_title={hun_title}&content={content}&year={year}', img_url, 'DefaultMovies.png', isFolder=False, meta={'title': hun_m, 'plot': content})
             
-            self.endDirectory('movies')
+            if custom_view_list == 'true':
+                self.endDirectory(fixed_wide_view)
+            else:
+                self.endDirectory(user_change_view)
         except:
             self.extractSeries(url, None, None, None, None, None)            
 
@@ -569,7 +601,10 @@ class navigator:
             
                 self.addDirectoryItem(f'[B]{ep_title} - {hun_title} - {year}[/B]', f'extract_episodes&url={resz_link}&img_url={img_url}&hun_title={hun_title}&content={content}&ep_title={ep_title}&year={year}', img_url, 'DefaultMovies.png', isFolder=True, meta={'title': hun_ep, 'plot': content})
         
-        self.endDirectory('series')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def extractEpisodes(self, url, img_url, hun_title, content, ep_title, year):
     
@@ -585,18 +620,42 @@ class navigator:
             
             self.addDirectoryItem(f'[B]{ep_title} - {hun_title} - {year}[/B]', f'playmovie&url={quote_plus(iframe_src)}&img_url={img_url}&hun_title={hun_title}&content={content}&year={year}', img_url, 'DefaultMovies.png', isFolder=False, meta={'title': hun_ep, 'plot': content})
         
-        self.endDirectory('series')
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def playMovie(self, url):
         resolved_url = None
+        subtitles = None
         try:
             url_to_resolve = url
-            if re.search('.*indavideo.*', url):
-                url_to_resolve = quote(url, safe=':/?=&')
 
-            resolved_url = urlresolver.resolve(url_to_resolve)
+            hmf_forsub = urlresolver.HostedMediaFile(url_to_resolve)
+            if hmf_forsub:
+                resolvers = hmf_forsub.get_resolvers()
+                if resolvers:
+                    r = resolvers[0]
+                    try:
+                        host, media_id = r.get_host_and_id(url_to_resolve)
+                        res_data = r.get_media_url(host, media_id, subs=True)
+                        
+                        if isinstance(res_data, tuple):
+                            resolved_url = res_data[0]
+                            subtitles = res_data[1]
+                        else:
+                            resolved_url = res_data
+                    except:
+                        pass
+
+            if not resolved_url:
+                resolved_url = urlresolver.resolve(url_to_resolve)
             if resolved_url:
                 play_item = xbmcgui.ListItem(path=resolved_url)
+
+                if subtitles and isinstance(subtitles, dict):
+                    play_item.setSubtitles(list(subtitles.values()))
+                
                 xbmc.log(f'{base_log_info}| playMovie | resolved_url: {resolved_url}', xbmc.LOGINFO)
                 xbmcplugin.setResolvedUrl(syshandle, True, listitem=play_item)
             else:
@@ -604,7 +663,7 @@ class navigator:
         except Exception as e:
             xbmc.log(f'{base_log_info}| playMovie | Hiba: {e}', xbmc.LOGERROR)
             notification = xbmcgui.Dialog()
-            notification.notification("JobbMintATv", "A videó nem érhető el vagy törölték.", time=5000)
+            notification.notification(addon_name, "A videó nem érhető el vagy törölték.", time=5000)
 
             xbmcplugin.setResolvedUrl(syshandle, False, listitem=xbmcgui.ListItem())
 
@@ -654,7 +713,10 @@ class navigator:
                 url_x = urllib.parse.urljoin(httx, href)
                 self.addDirectoryItem(title, f'extract_movie&url={quote_plus(url_x)}', '', 'DefaultFolder.png')
 
-        self.endDirectory()
+        if custom_view_list == 'true':
+            self.endDirectory(fixed_wide_view)
+        else:
+            self.endDirectory(user_change_view)
 
     def getSearchText(self):
         search_text = ''
