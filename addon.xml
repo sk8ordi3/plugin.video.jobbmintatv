@@ -16,6 +16,7 @@
 		<platform>all</platform>
 		<news>
 			1.1.1 - Beállításokban megjelenés változtatása, ha nem az alap Estuary skint használod
+			      - felirat(ok) hozzáadása videa linkeknél
 			1.1.0 - váltás resolveurlre
 			1.0.9 - változtatás lekövetése
 			1.0.8 - videa változtatás lekövetése, indavideo javítása

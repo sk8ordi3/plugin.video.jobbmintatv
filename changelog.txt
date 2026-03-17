@@ -1,5 +1,6 @@
 ﻿[B]1.1.1[/B]
 - Beállításokban megjelenés változtatása, ha nem az alap Estuary skint használod
+- felirat(ok) hozzáadása videa linkeknél
 [B]1.1.0[/B]
 - váltás resolveurlre
 [B]1.0.9[/B]

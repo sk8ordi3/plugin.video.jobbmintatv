@@ -4,6 +4,7 @@
 Kodi kiegészítő a JobbMintATv-hez
 
 1.1.1 - Beállításokban megjelenés változtatása, ha nem az alap Estuary skint használod
+      - felirat(ok) hozzáadása videa linkeknél
 
 1.1.0 - váltás resolveurlre
 
